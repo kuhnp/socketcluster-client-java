@@ -314,11 +314,13 @@ public class Socket extends Emitter {
                     JSONObject object = new JSONObject();
                     acks.put(counter.longValue(), getAckObject(channel, ack));
                     object.put("channel", channel);
+                    JSONObject extraData = new JSONObject();
                     if(dataExtras != null){
                         for(Map.Entry<String,String> entry:dataExtras.entrySet()){
-                            object.put(entry.getKey(), entry.getValue());
+                            extraData.put(entry.getKey(), entry.getValue());
                         }
                     }
+                    object.put("data", extraData);
                     subscribeObject.put("data", object);
                     subscribeObject.put("cid", counter.getAndIncrement());
                 } catch (JSONException e) {
