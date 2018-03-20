@@ -67,6 +67,12 @@ public class Socket extends Emitter {
         return channel;
     }
 
+    public Channel createChannel(String name, JSONObject extraData){
+        Channel channel = new Channel(name, extraData);
+        channels.add(channel);
+        return channel;
+    }
+
     public List<Channel> getChannels() {
         return channels;
     }
