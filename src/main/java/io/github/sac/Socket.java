@@ -8,7 +8,6 @@ import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import com.neovisionaries.ws.client.WebSocketFrame;
 import com.neovisionaries.ws.client.WebSocketState;
-import com.sun.istack.internal.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -306,7 +305,7 @@ public class Socket extends Emitter {
         return object;
     }
 
-    private Socket subscribe(final String channel, final Ack ack, @Nullable final Map<String,String> dataExtras) {
+    private Socket subscribe(final String channel, final Ack ack, final Map<String,String> dataExtras) {
         EventThread.exec(new Runnable() {
             public void run() {
                 JSONObject subscribeObject = new JSONObject();
@@ -596,7 +595,7 @@ public class Socket extends Emitter {
             Socket.this.subscribe(channelName);
         }
 
-        public void subscribe(Ack ack, @Nullable Map<String,String> dataExtras) {
+        public void subscribe(Ack ack, Map<String,String> dataExtras) {
             Socket.this.subscribe(channelName, ack, dataExtras);
         }
 

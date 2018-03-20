@@ -90,7 +90,7 @@ public class Main {
                     System.out.println("Subscribed to channel "+channelName+" successfully");
                 }
             }
-        });
+        }, null);
 
         channel.publish("Hi sachin", new Ack() {
             @Override
