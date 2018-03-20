@@ -280,7 +280,7 @@ public class Socket extends Emitter {
         return this;
     }
 
-    private Socket subscribe(final String channel) {
+    private Socket subscribe(final String channel, final JSONObject extraData) {
         EventThread.exec(new Runnable() {
             public void run() {
                 JSONObject subscribeObject = new JSONObject();
@@ -288,8 +288,10 @@ public class Socket extends Emitter {
                     subscribeObject.put("event", "#subscribe");
                     JSONObject object = new JSONObject();
                     object.put("channel", channel);
+                    if(extraData != null){
+                        object.put("data", extraData);
+                    }
                     subscribeObject.put("data", object);
-
                     subscribeObject.put("cid", counter.getAndIncrement());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -305,7 +307,7 @@ public class Socket extends Emitter {
         return object;
     }
 
-    private Socket subscribe(final String channel, final Ack ack, final Map<String,String> dataExtras) {
+    private Socket subscribe(final String channel, final Ack ack, final JSONObject extraData) {
         EventThread.exec(new Runnable() {
             public void run() {
                 JSONObject subscribeObject = new JSONObject();
@@ -314,13 +316,9 @@ public class Socket extends Emitter {
                     JSONObject object = new JSONObject();
                     acks.put(counter.longValue(), getAckObject(channel, ack));
                     object.put("channel", channel);
-                    JSONObject extraData = new JSONObject();
-                    if(dataExtras != null){
-                        for(Map.Entry<String,String> entry:dataExtras.entrySet()){
-                            extraData.put(entry.getKey(), entry.getValue());
-                        }
+                    if(extraData != null){
+                       object.put("data", extraData);
                     }
-                    object.put("data", extraData);
                     subscribeObject.put("data", object);
                     subscribeObject.put("cid", counter.getAndIncrement());
                 } catch (JSONException e) {
@@ -584,6 +582,7 @@ public class Socket extends Emitter {
     public class Channel {
 
         String channelName;
+        JSONObject extraData;
 
         public String getChannelName() {
             return channelName;
@@ -593,12 +592,17 @@ public class Socket extends Emitter {
             this.channelName = channelName;
         }
 
-        public void subscribe() {
-            Socket.this.subscribe(channelName);
+        public Channel(String channelName, JSONObject extraData) {
+            this.channelName = channelName;
+            this.extraData = extraData;
         }
 
-        public void subscribe(Ack ack, Map<String,String> dataExtras) {
-            Socket.this.subscribe(channelName, ack, dataExtras);
+        public void subscribe() {
+            Socket.this.subscribe(channelName, extraData);
+        }
+
+        public void subscribe(Ack ack) {
+            Socket.this.subscribe(channelName, ack, extraData);
         }
 
         public void onMessage(Listener listener) {
