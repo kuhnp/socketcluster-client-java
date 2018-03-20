@@ -8,6 +8,8 @@ import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import com.neovisionaries.ws.client.WebSocketFrame;
 import com.neovisionaries.ws.client.WebSocketState;
+import com.sun.istack.internal.Nullable;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -304,7 +306,7 @@ public class Socket extends Emitter {
         return object;
     }
 
-    private Socket subscribe(final String channel, final Ack ack) {
+    private Socket subscribe(final String channel, final Ack ack, @Nullable final Map<String,String> dataExtras) {
         EventThread.exec(new Runnable() {
             public void run() {
                 JSONObject subscribeObject = new JSONObject();
@@ -313,6 +315,11 @@ public class Socket extends Emitter {
                     JSONObject object = new JSONObject();
                     acks.put(counter.longValue(), getAckObject(channel, ack));
                     object.put("channel", channel);
+                    if(dataExtras != null){
+                        for(Map.Entry<String,String> entry:dataExtras.entrySet()){
+                            object.put(entry.getKey(), entry.getValue());
+                        }
+                    }
                     subscribeObject.put("data", object);
                     subscribeObject.put("cid", counter.getAndIncrement());
                 } catch (JSONException e) {
@@ -589,8 +596,8 @@ public class Socket extends Emitter {
             Socket.this.subscribe(channelName);
         }
 
-        public void subscribe(Ack ack) {
-            Socket.this.subscribe(channelName, ack);
+        public void subscribe(Ack ack, @Nullable Map<String,String> dataExtras) {
+            Socket.this.subscribe(channelName, ack, dataExtras);
         }
 
         public void onMessage(Listener listener) {
